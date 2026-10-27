@@ -42,10 +42,13 @@
   /* Overview */
   .meta{margin-top:24px;font-size:14px;color:var(--ink2);line-height:2}
   .meta b{color:var(--ink);font-weight:600}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px}
+  .meta .tel{color:var(--accent);font-weight:700;letter-spacing:1px}
+  .meta .call{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:1px}
+  .meta .date{font-size:13px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:28px}
+  .stat{padding:8px 0}
   .stat .k{font-size:13px;color:var(--ink2)}
-  .stat .v{margin-top:10px;font-size:30px;font-weight:700}
+  .stat .v{margin-top:8px;font-size:32px;font-weight:700}
   .stat .v small{font-size:14px;font-weight:400;color:var(--ink2)}
   .stat .v.accent{color:var(--accent)}
   .scene{margin-top:24px;border-radius:12px;padding:40px 36px;border:1px solid var(--line);position:relative;overflow:hidden;background:var(--paper) url("assets/scene-home.jpg") center/cover no-repeat;color:#F5F1EA;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end}
@@ -54,6 +57,12 @@
   .scene .tag{font-size:13px;color:#CFC7BB;letter-spacing:2px}
   .scene h3{margin-top:10px;font-size:clamp(20px,5.2vw,26px);font-weight:700;white-space:nowrap}
   .scene p{margin-top:10px;color:#DDD6CB;font-size:14px}
+  .scene-tabs{display:flex;flex-wrap:wrap;margin-top:14px;border-bottom:1px solid var(--line)}
+  .scene-tabs button{background:none;border:none;padding:12px 0;margin-right:36px;font-size:14px;color:var(--ink2);cursor:pointer;position:relative}
+  .scene-tabs button .no{font-size:12px;margin-right:6px}
+  .scene-tabs button.on{color:var(--accent)}
+  .scene-tabs button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent)}
+  .scene-note{margin-top:10px;font-size:12px;color:var(--ink2)}
 
   /* Plan preview */
   .plan-tools{display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:12px}
@@ -205,17 +214,19 @@
 
 <section id="overview">
   <div class="wrap">
-    <div class="meta">方案地址：<b>安徽省合肥市肥东县</b><br>报价日期：2026-10-27</div>
+    <div class="meta">服务顾问：<b>石新华</b>　<span class="tel">186 1233 6176</span>　<a class="call" href="tel:18612336176">联系顾问 ↗</a><br>服务区域：安徽省合肥市肥东县<br><span class="date">方案更新 2026-10-27</span></div>
     <div class="stats">
       <div class="stat"><div class="k">生活空间</div><div class="v">10<small> 间</small></div></div>
       <div class="stat"><div class="k">智能点位</div><div class="v">34<small> 处</small></div></div>
       <div class="stat"><div class="k">已配置合计</div><div class="v accent">¥9,602.40</div></div>
     </div>
     <div class="scene">
-      <div class="tag">让智能，融入日常</div>
-      <h3>归家的第一刻，恰好温柔。</h3>
-      <p>门锁识别回家，灯光、窗帘与影音即刻就绪——16 项设备、34 处点位，覆盖玄关、客餐厅、厨房、两卫、两卧与走廊。</p>
+      <div class="tag" id="scTag">让智能，融入日常</div>
+      <h3 id="scTitle">归家的第一刻，恰好温柔。</h3>
+      <p id="scDesc">门锁识别回家，灯光、窗帘与影音即刻就绪——16 项设备、34 处点位，覆盖玄关、客餐厅、厨房、两卫、两卧与走廊。</p>
     </div>
+    <div class="scene-tabs" id="sceneTabs"></div>
+    <div class="scene-note">场景示意，具体联动以本方案的设备配置与交付设置为准。</div>
   </div>
 </section>
 
@@ -411,6 +422,30 @@ function showDev(name){
   document.getElementById("overlay").classList.add("on");
 }
 document.getElementById("overlay").onclick=(e)=>{ if(e.target.id==="overlay") e.target.classList.remove("on"); };
+
+// scene tabs
+const SCENES=[
+ ["回家","让智能，融入日常","归家的第一刻，恰好温柔。","门锁识别回家，灯光、窗帘与影音即刻就绪。"],
+ ["灯光","光随场景","每一处光，都懂此刻。","回家、观影、睡眠，灯光随场景自动切换。"],
+ ["观影","一键成场","客厅秒变影院。","灯光调暗、窗帘合上、影音就绪，一句话的事。"],
+ ["睡眠","整夜安心","好眠，从熄灯后开始。","夜灯柔光引路，传感器整夜静默守护。"],
+ ["安心","无声守护","厨卫安全，实时在线。","燃气、水浸、烟雾异常，第一时间知晓。"],
+ ["舒适","恰到好处","环境始终如你所愿。","温湿度与空气状态，时刻被照顾。"]
+];
+const tabsEl=document.getElementById("sceneTabs");
+SCENES.forEach((s,i)=>{
+  const b=document.createElement("button");
+  b.innerHTML=`<span class="no">0${i+1}</span>${s[0]}`;
+  if(i===0) b.classList.add("on");
+  b.onclick=()=>{
+    document.querySelectorAll(".scene-tabs button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    document.getElementById("scTag").textContent=s[1];
+    document.getElementById("scTitle").textContent=s[2];
+    document.getElementById("scDesc").textContent=s[3];
+  };
+  tabsEl.appendChild(b);
+});
 
 // zoom
 let zoom=1;
